@@ -1,6 +1,6 @@
 
 
-# Deploying NeoX for DreamPress
+# Deploying GPT-NeoX 
 
 This doc has notes on:
 1. Getting things set up
