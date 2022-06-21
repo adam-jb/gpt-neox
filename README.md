@@ -1,6 +1,6 @@
 
 
-## Deploying NeoX for DreamPress
+# Deploying NeoX for DreamPress
 
 This doc has notes on:
 1. Getting things set up
@@ -8,7 +8,7 @@ This doc has notes on:
 3. Original NeoX README.rm 
 
 
-### Setting up machine
+# Setting up machine
 
 Start with A6000 instance with neox image: https://hub.docker.com/r/leogao2/gpt-neox
 
@@ -48,7 +48,7 @@ Add prompt.txt to main dir
 
 
 
-### For checking model runs
+# For checking model runs
 
 Checking model runs with merged weights: running with text input as prompt
 >python ./deepy.py generate.py /home/mchorse/checkpoints_merged/configs/config.yml -i prompt.txt -o sample_outputs.txt && \
@@ -76,7 +76,7 @@ If the above doesn't work it might be a file path issue: try putting flask_model
 
 
 
-#### Notes on using json config
+# Notes on using json config
 
 get_deepspeed_main_args() in arguments.py brings all the arguments together
 
@@ -91,7 +91,7 @@ Also gets get_parent_class_value_dict(). Also defined in arguments.py
 
 
 
-##### Changes I made to NeoX Eleuther repo:
+# Changes I made to NeoX Eleuther repo:
 
 Replaced file for merge:
 	/home/gpt-neox/tools/merge.py
@@ -118,9 +118,9 @@ Add chat_with_gpt.py to main dir
 
 Add flask_model.py to main dir
 
-# replace:
+replace:
 	megatron/neox_arguments/arguments.py 
-# with
+with:
 	new_arguments.py (the one made in Adam's Mac DreamPress folder, made in June 2022)
 
 
