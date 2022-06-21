@@ -5,7 +5,7 @@
 This doc has notes on:
 1. Getting things set up
 2. How our git page differs from the official neoX one
-3. Original NeoX README.rm 
+3. Original NeoX README.md
 
 
 # Setting up machine
