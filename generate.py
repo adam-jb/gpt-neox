@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 # Copyright (c) 2021 Josh Levy-Kramer <josh@levykramer.co.uk>. All rights reserved.
 # This file is based on code by the authors denoted below and has been modified from its original version.
@@ -67,6 +68,20 @@ def main():
             top_p=neox_args.top_p,
         )
 
+    elif neox_args.text_gen_type == "prompt":
+        sample_generated = generate_samples_from_prompt(
+            neox_args=neox_args,
+            model=model,
+            text="Anuj was having a lovely Day",
+            recompute=neox_args.recompute,
+            temperature=neox_args.temperature,
+            maximum_tokens=neox_args.maximum_tokens,
+            top_k=neox_args.top_k,
+            top_p=neox_args.top_p,
+        )
+        print(f'sample_generated: {sample_generated}')
+
+
     elif neox_args.text_gen_type == "interactive":
         generate_samples_interactive(
             neox_args=neox_args,
@@ -86,3 +101,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
