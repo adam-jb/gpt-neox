@@ -1,6 +1,6 @@
 
 
-# Deploying GPT-NeoX 
+# Deploying GPT-NeoX API
 
 This doc has notes on:
 1. Getting things set up
