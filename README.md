@@ -60,6 +60,8 @@ If the above doesn't work might have to change a value in config.yml
 Checking model can be loaded and held in memory using our params "megatron_config_export.json"
 >python3 chat_with_gpt.py
 
+If that doesn't work might have to change params in "megatron_config_export.json"
+
 Run flask API on open web (not secure)
 >export FLASK_APP=flask_api_model.py 
 >flask run --host=0.0.0.0
