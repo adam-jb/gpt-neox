@@ -1,3 +1,135 @@
+
+
+## Deploying NeoX for DreamPress
+
+This doc has notes on:
+1. Getting things set up
+2. How our git page differs from the official neoX one
+3. Original NeoX README.rm 
+
+
+### Setting up machine
+
+Start with A6000 instance with neox image: https://hub.docker.com/r/leogao2/gpt-neox
+
+IF this doesn't work try removing 'set password' section of Dockerfile and rebuilding: https://github.com/EleutherAI/gpt-neox/blob/main/Dockerfile
+
+
+clone codebase
+>git clone [git url for our codebase]
+
+
+navigate to eleuther main dir
+>cd /home/mchorse/[codebase name]
+
+
+Download weights
+>wget --cut-dirs=5 -nH -r --no-parent --reject "index.html*" https://mystic.the-eye.eu/public/AI/models/GPT-NeoX-20B/slim_weights/ -P 20B_checkpoints
+
+
+Merge weights
+>python tools/merge.py -d 20B_checkpoints -o checkpoints_merged -s 150000 -mp 1 -pp 1
+
+
+```
+TRY GOING WITHOUT THIS: MAYBE NOT NEEDED IF MODEL COMES WITH ITS OWN TOKENISER - Move vocab file:
+vocab-file: /mnt/ssd-1/data/20B_tokenizer.json
+ to
+vocab-file: /root/gpt-neox/20B_checkpoints/20B_tokenizer.json
+```
+
+
+Add prompt.txt to main dir
+>echo "Anuj was having a wonderful day. Tell us what he did in as much detail as possible." > prompt.txt
+
+
+
+
+
+
+
+### For checking model runs
+
+Checking model runs with merged weights: running with text input as prompt
+>python ./deepy.py generate.py /home/mchorse/checkpoints_merged/configs/config.yml -i prompt.txt -o sample_outputs.txt && \
+	cat sample_outputs.txt
+
+If the above doesn't work might have to change a value in config.yml
+
+
+Checking model can be loaded and held in memory using our params "megatron_config_export.json"
+>python3 chat_with_gpt.py
+
+Run flask API on open web (not secure)
+>export FLASK_APP=flask_api_model.py 
+>flask run --host=0.0.0.0
+
+Test if it works in browser or get request
+>http://[SERVER-IP-ADDRESS]:5000/multi/anuj+was+having+a+heck+of+a+day
+
+If the above doesn't work it might be a file path issue: try putting flask_model.py in megatron folder, and running
+>export FLASK_APP=megatron/flask_api_model.py 
+>flask run --host=0.0.0.0
+
+
+
+
+
+
+#### Notes on using json config
+
+get_deepspeed_main_args() in arguments.py brings all the arguments together
+
+It gets deepspeed args from NeoXArgsDeepspeedRunner(), which is in /megatron/neox_arguments/deepspeed_args.py 
+
+Also gets get_parent_class_value_dict(). Also defined in arguments.py
+
+
+
+
+
+
+
+
+##### Changes I made to NeoX Eleuther repo:
+
+Replaced file for merge:
+	/home/gpt-neox/tools/merge.py
+with
+	gcp_neox_support_files/merge.py
+
+
+Replace generate file. Gives option of running interactive prompts if changing (I think) config.yml
+generate.py (main dir) with generate.py from support files 
+
+
+Add to main dir:
+megatron_config_export.json
+
+
+Move:
+	gcp_neox_support_files/new_text_generation_utils.py 
+To 
+	megatron/text_generation_utils.py
+
+
+Add chat_with_gpt.py to main dir
+
+
+Add flask_model.py to main dir
+
+# replace:
+	megatron/neox_arguments/arguments.py 
+# with
+	new_arguments.py (the one made in Adam's Mac DreamPress folder, made in June 2022)
+
+
+
+
+
+
+
+
 [![GitHub issues](https://img.shields.io/github/issues/EleutherAI/gpt-neox)](https://github.com/EleutherAI/gpt-neox/issues)
 [<img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-28.svg" alt="Weights & Biases monitoring" height=20>](https://wandb.ai/eleutherai/neox)
 
@@ -363,3 +495,12 @@ For full terms, see the `LICENSE` file. If you have any questions, comments, or 
 ## Acknowledgements
 
 We run our experiments on a Kubernetes cluster generously provided by [CoreWeave](https://coreweave.com/).
+
+
+
+
+
+
+
+
+
