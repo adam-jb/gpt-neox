@@ -30,6 +30,7 @@ def chat_with_gpt(text):
 	            top_p=neox_args.top_p,
         )
 	print(f'sample_generated: {sample_generated}')
+	return sample_generated
 
 
 # Example
