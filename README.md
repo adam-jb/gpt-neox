@@ -136,10 +136,15 @@ flask run --host=0.0.0.0
 
 $$$ To query the API from another console on the same machine:
 >curl http://127.0.0.1:5000
+>
 >curl http://127.0.0.1:5000/multi/anuj+was+having+a+heck+of+a+day
+>
 >curl http://127.0.0.1:5000/multi/tildy+was+having+a+heck+of+a+day+.+Tell+us+what+she+did+next
+>
 >curl http://127.0.0.1:5000/multi/adam+has+a+big+career+decision+and+he+will+make+the+best+choice+which+is
+>
 >curl http://127.0.0.1:5000/multi/write+an+important+story+about+dead+skin+with+two+main+characters+beginning+in+london
+>
 >curl http://127.0.0.1:5000/multi/write+a+rap+in+the+style+of+kanye+west
 >curl http://127.0.0.1:5000/multi/write+a+hiphop+rap+in+the+style+of+donald+trump
 
@@ -147,42 +152,56 @@ $$$ To query the API from another console on the same machine:
 Notice these are internal facing queries only. Hosting on 0.0.0.0 should open the Flask API up to the world via the public IP address. But I had no luck with this. It *might* be because Vast have some security thing going on, which would be a real challenge.
 
 If you get an error when trying to run this after breaking a process, use:
+
 >ps ax
+>
 And look for something starting with the description " home/gpt-neox/env_gpt_neox/bin/python /h...... "
+
 To check if any other python processes are still running. If so end them with:
+
 >kill -9 [PROCESS ID]
 
 
 
 
 To get your public ip address
+
 >apt install net-tools 
+>
 >curl ifconfig.me
 
 
 
 To test you can reach the server - should see this response: {"we await":"your json"}
+
 >http://[YOUR IP]:5000/
 
 
 
 Then query it:
+
 >http://[YOUR IP]:5000/multi/anuj+was+having+a+heck+of+a+day
+
 
 
 
 
 To see if model can be held in memory open python console with command:
 >python3
+>
 Then copy and paste everything in the script **chat_with_gpt.py** to have an interactive conversation with GPT
 
 
 
 
 # to run the model with one input
+
 echo "Anuj was having a wonderful day. Tell us what he did in as much detail as possible." > prompt.txt
+
 python ./deepy.py generate.py checkpoints_merged/configs/config.yml -i prompt.txt -o sample_outputs.txt
+
 cat sample_outputs.txt
+
 echo "Model works if line above is something that looks like text"
 
 
