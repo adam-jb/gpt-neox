@@ -381,12 +381,9 @@ class NeoXArgs(*BASE_CLASSES):
         with open('megatron_config_export.json', 'r') as fp:
             megatron_config = json.load(fp)
 
-        """ In our version we always overwrite the values
         if overwrite_values is not None:
             megatron_config.update(overwrite_values)
-        """
             
-        megatron_config.update(overwrite_values)
         return cls.from_dict(args_dict=megatron_config)
 
     @staticmethod
