@@ -367,15 +367,17 @@ class NeoXArgs(*BASE_CLASSES):
         args_parsed, _ = parser.parse_known_args()
 
         # LOADING ORIGINAL FOR COMPARISON %%%
-        megatron_config_ORIGINAL = json.loads(args_parsed.megatron_config)
+        #megatron_config_ORIGINAL = json.loads(args_parsed.megatron_config)
 
         ## make /root/gpt-neox/megatron_config_export.json' by running original arguments.py and saving 
         ## OG args_parsed.megatron_config as a dict, with soemthing like:
-        with open('/home/mchorse/megatron_config_export_ORIGINAL_FOR_DEV.json', 'w') as fp:
+        """
+        with open('megatron_config_export_ORIGINAL_FOR_DEV.json', 'w') as fp:
             json.dump(megatron_config, fp)
+        """
 
         ## adding in our own args that arent dependent on the user specifying /root/gpt-neox/checkpoints_merged/configs/config.yml
-        with open('/home/mchorse/megatron_config_export.json', 'r') as fp:
+        with open('megatron_config_export.json', 'r') as fp:
             megatron_config = json.load(fp)
 
         if overwrite_values is not None:
