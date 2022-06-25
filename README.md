@@ -19,15 +19,21 @@ Full setup inc installations and weight downloads takes about 2hrs
 When you ssh into vast instance, preface the command with sudo
 
 nvcc --version	  # cuda version
+
 lsb_release -a    # linux os version
 
-ctrl + B, followed by "  # to split screen with tmux
-ctrl + B, followed by o  # to switch between windows
-exit                     # close window
+to split screen with tmux
+>ctrl + B, followed by "
+
+to switch between windows
+>ctrl + B, followed by o 
+
+To close a window
+>exit                    
 
 
 
-
+## Script to run in your new Vast AI instance
 ```
 cd /home
 
@@ -77,25 +83,30 @@ python /root/gpt-neox/megatron/fused_kernels/setup.py install
 
 # install EleutherAI's version of deepspeed. Needs to be this specific version for it to run
 #pip install git+https://github.com/EleutherAI/DeeperSpeed.git@eb7f5cff36678625d23db8a8fe78b4a93e5d2c75#egg=deepspeed
-#pip install mpi4py 
+#pip install mpi4py
+
+
+# needed for API hosting
 pip install flask flask-sse gunicorn
 
 
 
-# Get an error in main model if try and use a later version 
+# Get an error in main model if try and use a later version, so force this version
 pip install protobuf==3.20
 
 
 # Downloading weights: this takes an hour or so
+# YOU MAY WISH TO DOWNLOAD DIFFERENT WEIGHTS
 wget --cut-dirs=5 -nH -r --no-parent --reject "index.html*" https://mystic.the-eye.eu/public/AI/models/GPT-NeoX-20B/slim_weights/ -P 20B_checkpoints
 
 
 
-# change params
+# change params: CHANGE THE NUMBER OF TOKENS THE MODEL WILL RETURN HERE
 python update_megatron_config_export.py
 
 
 # merge weights so model can run on 1 gpu
+# CHANGE THE FOLDER FROM 20B_checkpoints to another input if you tuned your own weights
 python tools/merge.py -d 20B_checkpoints -o checkpoints_merged -s 150000 -mp 1 -pp 1
 
 
@@ -108,6 +119,7 @@ cp config_merged.yaml checkpoints_merged/configs/config.yml
 python /root/gpt-neox/megatron/fused_kernels/setup.py install
 
 
+# All being well, all is now ready to run 
 ```
 
 
@@ -119,7 +131,6 @@ export FLASK_APP=flask_api_model
 flask run --host=0.0.0.0
 ```
 
-
 $$$ To query the API from another console on the same machine:
 >curl http://127.0.0.1:5000
 >curl http://127.0.0.1:5000/multi/anuj+was+having+a+heck+of+a+day
@@ -130,6 +141,7 @@ $$$ To query the API from another console on the same machine:
 >curl http://127.0.0.1:5000/multi/write+a+hiphop+rap+in+the+style+of+donald+trump
 
 
+Notice these are internal facing queries only. Hosting on 0.0.0.0 should open the Flask API up to the world via the public IP address. But I had no luck with this. It *might* be because Vast have some security thing going on, which would be a real challenge.
 
 If you get an error when trying to run this after breaking a process, use:
 >ps ax
