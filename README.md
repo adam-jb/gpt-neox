@@ -8,70 +8,171 @@ This doc has notes on:
 3. Original NeoX README.md
 
 
-# Setting up machine
+# Setting up API on Vast AI
 
-Start with A6000 instance with neox image: https://hub.docker.com/r/leogao2/gpt-neox
+Note! Can't find a way to reach the public IP address of my Vast AI server
 
-IF this doesn't work try removing 'set password' section of Dockerfile and rebuilding: https://github.com/EleutherAI/gpt-neox/blob/main/Dockerfile
+Set base image in Vast AI to this *exactly*: nvidia/cuda:11.1.1-devel-ubuntu20.04
+
+Full setup inc installations and weight downloads takes about 2hrs
+
+When you ssh into vast instance, preface the command with sudo
+
+nvcc --version	  # cuda version
+lsb_release -a    # linux os version
+
+ctrl + B, followed by "  # to split screen with tmux
+ctrl + B, followed by o  # to switch between windows
+exit                     # close window
 
 
-clone codebase
->git clone [git url for our codebase]
-
-
-navigate to eleuther main dir
->cd /home/mchorse/[codebase name]
-
-
-Download weights
->wget --cut-dirs=5 -nH -r --no-parent --reject "index.html*" https://mystic.the-eye.eu/public/AI/models/GPT-NeoX-20B/slim_weights/ -P 20B_checkpoints
-
-
-Merge weights
->python tools/merge.py -d 20B_checkpoints -o checkpoints_merged -s 150000 -mp 1 -pp 1
 
 
 ```
-TRY GOING WITHOUT THIS: MAYBE NOT NEEDED IF MODEL COMES WITH ITS OWN TOKENISER - Move vocab file:
-vocab-file: /mnt/ssd-1/data/20B_tokenizer.json
- to
-vocab-file: /root/gpt-neox/20B_checkpoints/20B_tokenizer.json
+cd /home
+
+wget -q https://bootstrap.pypa.io/get-pip.py
+sudo python3 get-pip.py
+pip3 --version
+rm -rf get-pip.py
+
+sudo apt update
+yes Y | sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev
+yes Y | apt-get install python-setuptools
+sudo python3-setuptools
+yes Y | sudo apt install virtualenv
+yes Y | sudo apt install git
+yes Y | sudo apt install wget
+yes Y | sudo apt install -y vim
+
+
+git clone https://github.com/adam-jb/gpt-neox
+cd /home/gpt-neox
+
+
+
+virtualenv env_gpt_neox --python=python3
+source env_gpt_neox/bin/activate
+
+pip install torch==1.8.2+cu111 torchvision==0.9.2+cu111 torchaudio==0.8.2 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+pip install pip --upgrade
+yes Y | sudo apt install libopenmpi-dev
+pip install -r requirements/requirements.txt
+python /root/gpt-neox/megatron/fused_kernels/setup.py install
+
+
+
+# needed for the merge and not in requirements.txt
+# pip install PyYaml tqdm 
+
+# need to run the model and some are not in requirements.txt (some are, but werent installed in the above)
+# pip install shortuuid sentencepiece best-download
+
+
+## Some here are included in requirements.txt, so ignore
+#pip install wandb==0.10.28
+#pip install transformers~=4.16.0
+#pip install lm_eval==0.2.0
+
+
+# install EleutherAI's version of deepspeed. Needs to be this specific version for it to run
+#pip install git+https://github.com/EleutherAI/DeeperSpeed.git@eb7f5cff36678625d23db8a8fe78b4a93e5d2c75#egg=deepspeed
+#pip install mpi4py 
+pip install flask flask-sse gunicorn
+
+
+
+# Get an error in main model if try and use a later version 
+pip install protobuf==3.20
+
+
+# Downloading weights: this takes an hour or so
+wget --cut-dirs=5 -nH -r --no-parent --reject "index.html*" https://mystic.the-eye.eu/public/AI/models/GPT-NeoX-20B/slim_weights/ -P 20B_checkpoints
+
+
+
+# change params
+python update_megatron_config_export.py
+
+
+# merge weights so model can run on 1 gpu
+python tools/merge.py -d 20B_checkpoints -o checkpoints_merged -s 150000 -mp 1 -pp 1
+
+
+# overwrite the config file, which specifies the correct location of the vocab file
+cp config_merged.yaml checkpoints_merged/configs/config.yml
+
+
+
+# rerun this to allow model to be called as per the below
+python /root/gpt-neox/megatron/fused_kernels/setup.py install
+
+
 ```
 
 
-Add prompt.txt to main dir
->echo "Anuj was having a wonderful day. Tell us what he did in as much detail as possible." > prompt.txt
+# To run the API itself (see $$$ section below for query):
+```
+# BEFORE doing this open a 2nd terminal by pressing ctrl+b and pressing '%'; then press ctrl+b then 'o' to switch windows
+# this lets you 
+export FLASK_APP=flask_api_model
+flask run --host=0.0.0.0
+```
+
+
+$$$ To query the API from another console on the same machine:
+>curl http://127.0.0.1:5000
+>curl http://127.0.0.1:5000/multi/anuj+was+having+a+heck+of+a+day
+>curl http://127.0.0.1:5000/multi/tildy+was+having+a+heck+of+a+day+.+Tell+us+what+she+did+next
+>curl http://127.0.0.1:5000/multi/adam+has+a+big+career+decision+and+he+will+make+the+best+choice+which+is
+>curl http://127.0.0.1:5000/multi/write+an+important+story+about+dead+skin+with+two+main+characters+beginning+in+london
+>curl http://127.0.0.1:5000/multi/write+a+rap+in+the+style+of+kanye+west
+>curl http://127.0.0.1:5000/multi/write+a+hiphop+rap+in+the+style+of+donald+trump
+
+
+
+If you get an error when trying to run this after breaking a process, use:
+>ps ax
+And look for something starting with the description " home/gpt-neox/env_gpt_neox/bin/python /h...... "
+To check if any other python processes are still running. If so end them with:
+>kill -9 [PROCESS ID]
 
 
 
 
+To get your public ip address
+>apt install net-tools 
+>curl ifconfig.me
 
 
 
-# For checking model runs
-
-Checking model runs with merged weights: running with text input as prompt
->python ./deepy.py generate.py /home/mchorse/checkpoints_merged/configs/config.yml -i prompt.txt -o sample_outputs.txt && \
-	cat sample_outputs.txt
-
-If the above doesn't work might have to change a value in config.yml
+To test you can reach the server - should see this response: {"we await":"your json"}
+>http://[YOUR IP]:5000/
 
 
-Checking model can be loaded and held in memory using our params "megatron_config_export.json"
->python3 chat_with_gpt.py
 
-If that doesn't work might have to change params in "megatron_config_export.json"
+Then query it:
+>http://[YOUR IP]:5000/multi/anuj+was+having+a+heck+of+a+day
 
-Run flask API on open web (not secure)
->export FLASK_APP=flask_api_model.py 
->flask run --host=0.0.0.0
 
-Test if it works in browser or get request
->http://[SERVER-IP-ADDRESS]:5000/multi/anuj+was+having+a+heck+of+a+day
 
-If the above doesn't work it might be a file path issue: try putting flask_model.py in megatron folder, and running
->export FLASK_APP=megatron/flask_api_model.py 
->flask run --host=0.0.0.0
+
+To see if model can be held in memory open python console with command:
+>python3
+Then copy and paste everything in the script **chat_with_gpt.py** to have an interactive conversation with GPT
+
+
+
+
+# to run the model with one input
+echo "Anuj was having a wonderful day. Tell us what he did in as much detail as possible." > prompt.txt
+python ./deepy.py generate.py checkpoints_merged/configs/config.yml -i prompt.txt -o sample_outputs.txt
+cat sample_outputs.txt
+echo "Model works if line above is something that looks like text"
+
+
+
+
 
 
 
@@ -93,7 +194,7 @@ Also gets get_parent_class_value_dict(). Also defined in arguments.py
 
 
 
-# Changes I made to NeoX Eleuther repo:
+# NON-EXHAUSTIVE Changes I made to NeoX Eleuther repo:
 
 Replaced file for merge:
 	/home/gpt-neox/tools/merge.py
