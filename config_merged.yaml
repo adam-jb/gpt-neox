@@ -60,7 +60,7 @@ tensorboard-dir: /mnt/ssd-1/tensorboard
 tokenizer_type: HFTokenizer
 train-iters: 150000
 train_micro_batch_size_per_gpu: 4
-vocab-file: /mnt/ssd-1/data/20B_tokenizer.json
+vocab-file: /root/gpt-neox/20B_checkpoints/20B_tokenizer.json
 wall_clock_breakdown: false
 wandb_project: gpt-thicc
 wandb_team: eleutherai
