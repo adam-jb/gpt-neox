@@ -18,7 +18,6 @@ model, neox_args = setup_for_inference_or_eval(use_cache=True)
 
 # Wrapper
 def chat_with_gpt(text):
-
 	sample_generated = generate_samples_from_prompt(
 	            neox_args=neox_args,
 	            model=model,
