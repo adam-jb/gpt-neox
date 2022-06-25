@@ -922,5 +922,5 @@ def call_model(input_string):
 
 
 if __name__ == '__main__':
-	app.run(threaded=True, host='209.137.198.4', port=5000, debug=False) # threaded=True mode allows concurrent requests, opening a new thread for each new request; but might block gunicorn
+	app.run(threaded=True, host='0.0.0.0', port=5000, debug=False) # threaded=True mode allows concurrent requests, opening a new thread for each new request; but might block gunicorn
 
