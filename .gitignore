@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+20B_checkpoints/*
+env_gpt_neox/*
+
+
 # C extensions
 *.so
 
