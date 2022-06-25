@@ -225,7 +225,10 @@ class HFTokenizer(AbstractTokenizer):
         name = "HFTokenizer"
         super().__init__(name)
 
-        self.tokenizer = Tokenizer.from_file(vocab_file)
+        #new line from ada: # vocab_file hard coded pathway here
+        vocab_file = "/home/gpt-neox/20B_checkpoints/20B_tokenizer.json"
+        
+        self.tokenizer = Tokenizer.from_file(vocab_file) 
         self.eod_id = self.tokenizer.token_to_id("<|endoftext|>")
         self.pad_id = self.tokenizer.token_to_id("<|padding|>")
 
