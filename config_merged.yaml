@@ -1,0 +1,77 @@
+attention-dropout: 0
+bias-gelu-fusion: true
+checkpoint-activations: true
+checkpoint-num-layers: 1
+data-impl: mmap
+data-path: /mnt/ssd-1/data/pile_20B_tokenizer/pile_20B_tokenizer_text_document
+distributed-backend: nccl
+eval-interval: 1000
+eval-iters: 10
+fp16:
+  enabled: true
+  fp16: true
+  hysteresis: 2
+  initial_scale_power: 12
+  loss_scale: 0
+  loss_scale_window: 1000
+  min_loss_scale: 1
+gpt_j_residual: true
+gradient_accumulation_steps: 32
+gradient_clipping: 1.0
+hidden-dropout: 0
+hidden-size: 6144
+init_method: small_init
+load: checkpoints_merged
+log-dir: /mnt/ssd-1/logs
+log-interval: 2
+lr-decay-iters: 150000
+lr-decay-style: cosine
+make_vocab_size_divisible_by: 256
+max-position-embeddings: 2048
+min_lr: 9.7e-06
+model-parallel-size: 1
+no-weight-tying: true
+no_load_rng: true
+norm: layernorm
+num-attention-heads: 64
+num-layers: 44
+optimizer:
+  params:
+    betas:
+    - 0.9
+    - 0.95
+    eps: 1.0e-08
+    lr: 9.7e-05
+  type: Adam
+output_layer_init_method: wang_init
+output_layer_parallelism: column
+partition-activations: false
+pipe-parallel-size: 1
+pos-emb: rotary
+rotary_pct: 0.25
+save: checkpoints_merged
+save-interval: 500
+scaled-upper-triang-masked-softmax-fusion: true
+seq-length: 2048
+split: 995,4,1
+steps_per_print: 2
+synchronize-each-layer: true
+tensorboard-dir: /mnt/ssd-1/tensorboard
+tokenizer_type: HFTokenizer
+train-iters: 150000
+train_micro_batch_size_per_gpu: 4
+vocab-file: /mnt/ssd-1/data/20B_tokenizer.json
+wall_clock_breakdown: false
+wandb_project: gpt-thicc
+wandb_team: eleutherai
+warmup: 0.01
+weight-decay: 0.01
+zero_optimization:
+  allgather_bucket_size: 1260000000
+  allgather_partitions: true
+  contiguous_gradients: true
+  cpu_offload: false
+  overlap_comm: true
+  reduce_bucket_size: 1260000000
+  reduce_scatter: true
+  stage: 0
