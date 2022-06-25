@@ -922,5 +922,5 @@ def call_model(input_string):
 
 
 if __name__ == '__main__':
-	app.run(threaded=True) # threaded mode allows concurrent requests, opening a new thread for each new request
+	app.run(host='0.0.0.0', port=5000, threaded=True) # threaded mode allows concurrent requests, opening a new thread for each new request
 
