@@ -68,20 +68,23 @@ python /root/gpt-neox/megatron/fused_kernels/setup.py install
 
 
 
-# needed for the merge and not in requirements.txt
+# at one point was needed for the merge and not in requirements.txt. commented out as seems fine without it, but keeping just in case
 # pip install PyYaml tqdm 
 
 # need to run the model and some are not in requirements.txt (some are, but werent installed in the above)
+# commented out as seems fine without it, but keeping just in case
 # pip install shortuuid sentencepiece best-download
 
 
 ## Some here are included in requirements.txt, so ignore
+# commented out as seems fine without it, but keeping just in case
 #pip install wandb==0.10.28
 #pip install transformers~=4.16.0
 #pip install lm_eval==0.2.0
 
 
 # install EleutherAI's version of deepspeed. Needs to be this specific version for it to run
+# commented out as seems fine without it, but keeping just in case
 #pip install git+https://github.com/EleutherAI/DeeperSpeed.git@eb7f5cff36678625d23db8a8fe78b4a93e5d2c75#egg=deepspeed
 #pip install mpi4py
 
