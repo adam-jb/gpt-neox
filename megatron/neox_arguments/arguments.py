@@ -352,7 +352,7 @@ class NeoXArgs(*BASE_CLASSES):
         We then instantiate a new NeoXArgs from the dictionary (`.from_dict`). This should ensure args are never inconsistent across machines.
         """
 
-
+        """
         ## dont use parser in adam's version
         parser = argparse.ArgumentParser(
             description="GPT-NeoX Configuration", allow_abbrev=False
@@ -365,6 +365,7 @@ class NeoXArgs(*BASE_CLASSES):
         )
 
         args_parsed, _ = parser.parse_known_args()
+        """
 
         # LOADING ORIGINAL FOR COMPARISON %%%
         #megatron_config_ORIGINAL = json.loads(args_parsed.megatron_config)
@@ -380,8 +381,12 @@ class NeoXArgs(*BASE_CLASSES):
         with open('megatron_config_export.json', 'r') as fp:
             megatron_config = json.load(fp)
 
+        """ In our version we always overwrite the values
         if overwrite_values is not None:
             megatron_config.update(overwrite_values)
+        """
+            
+        megatron_config.update(overwrite_values)
         return cls.from_dict(args_dict=megatron_config)
 
     @staticmethod
