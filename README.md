@@ -64,7 +64,7 @@ pip install torch==1.8.2+cu111 torchvision==0.9.2+cu111 torchaudio==0.8.2 -f htt
 pip install pip --upgrade
 yes Y | sudo apt install libopenmpi-dev
 pip install -r requirements/requirements.txt
-python /root/gpt-neox/megatron/fused_kernels/setup.py install
+python /home/gpt-neox/megatron/fused_kernels/setup.py install
 
 
 
@@ -119,7 +119,7 @@ cp config_merged.yaml checkpoints_merged/configs/config.yml
 
 
 # rerun this to allow model to be called as per the below
-python /root/gpt-neox/megatron/fused_kernels/setup.py install
+python /home/gpt-neox/megatron/fused_kernels/setup.py install
 
 
 # All being well, all is now ready to run 
@@ -146,16 +146,19 @@ $$$ To query the API from another console on the same machine:
 >curl http://127.0.0.1:5000/multi/write+an+important+story+about+dead+skin+with+two+main+characters+beginning+in+london
 >
 >curl http://127.0.0.1:5000/multi/write+a+rap+in+the+style+of+kanye+west
+>
 >curl http://127.0.0.1:5000/multi/write+a+hiphop+rap+in+the+style+of+donald+trump
 
 
 Notice these are internal facing queries only. Hosting on 0.0.0.0 should open the Flask API up to the world via the public IP address. But I had no luck with this. It *might* be because Vast have some security thing going on, which would be a real challenge.
 
-If you get an error when trying to run this after breaking a process, use:
+If you get an error when trying to run this after breaking a process, use this to list current processes:
 
 >ps ax
->
+
 And look for something starting with the description " home/gpt-neox/env_gpt_neox/bin/python /h...... "
+
+Or anything else that looks like flask, pytorch, etc
 
 To check if any other python processes are still running. If so end them with:
 
